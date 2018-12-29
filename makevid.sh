@@ -1,15 +1,21 @@
 #!/bin/bash
-rm ffmpeg.sh
+
 cd cameras/
+rm ffmpeg.sh
+
 ls -d -l */ |sort|while read -r camdir
 do
+
+   date=`date +"%Y%m%d-%H%M"`
    camera=`echo ${camdir%?}|awk '{print $9}'`
-   echo Camera is $camera
+   filename="$date-$camera.mp4"
+   echo Camera is $camera, filename will be $filename
 
    sleep 1
 
    rm $camera.concat.txt
-   find $camera/ -type f -name *.jpg | sort > $camera.concat.txt   
+   #Size comparison in here to filter out bad jpegs
+   find $camera/ -type f -name *.jpg -size +15k | sort > $camera.concat.txt   
 
    rm $camera.input.txt
    cat $camera.concat.txt | while read -r frame
@@ -18,7 +24,7 @@ do
       echo duration 0.1 >>$camera.input.txt
    done
 
-echo /usr/bin/ffmpeg -y -f concat -safe 0 -i $camera.input.txt -vf fps=24 $camera.mp4 >> ffmpeg.sh
+   echo /usr/bin/ffmpeg -y -f concat -safe 0 -i $camera.input.txt -vf fps=24 $filename >> ffmpeg.sh
 
 done
 
