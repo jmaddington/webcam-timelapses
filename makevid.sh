@@ -15,7 +15,7 @@ do
 
    rm $camera.concat.txt
    #Size comparison in here to filter out bad jpegs
-   find $camera/ -type f -name *.jpg -size +15k | sort > $camera.concat.txt   
+   find $camera/ -type f -name *.jpg -size +15k -cmin -525600 | sort > $camera.concat.txt   
 
    rm $camera.input.txt
    cat $camera.concat.txt | while read -r frame
@@ -24,7 +24,7 @@ do
       echo duration 0.1 >>$camera.input.txt
    done
 
-   echo /usr/bin/ffmpeg -y -f concat -safe 0 -i $camera.input.txt -vf fps=24 $filename >> ffmpeg.sh
+   echo /usr/bin/ffmpeg -y -f concat -safe 0 -i $camera.input.txt -vf fps=60 $filename >> ffmpeg.sh
 
 done
 
